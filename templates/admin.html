@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | JECRC Helpdesk AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2236;
+            --bg-card-hover: #1f2a40;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --border-color: #1e3a5f;
+            --gradient-primary: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        .admin-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 16px; }
+
+        .header-left h1 {
+            font-size: 1.3rem;
+            background: linear-gradient(90deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-left .subtitle { font-size: 0.72rem; color: var(--text-muted); }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        .btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn:hover { color: var(--accent-blue); border-color: var(--accent-blue); background: rgba(59,130,246,0.08); }
+        .btn-green { color: var(--accent-green); border-color: rgba(16,185,129,0.3); }
+        .btn-green:hover { border-color: var(--accent-green); background: rgba(16,185,129,0.08); }
+        .btn-red { color: var(--accent-red); border-color: rgba(239,68,68,0.3); }
+        .btn-red:hover { border-color: var(--accent-red); background: rgba(239,68,68,0.08); }
+
+        .live-dot {
+            width: 8px; height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+        }
+
+        /* ── Dashboard Container ── */
+        .dashboard { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+        /* ── Stat Cards ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--accent-blue); }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+        }
+
+        .stat-card:nth-child(1)::before { background: var(--gradient-primary); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #10b981, #06b6d4); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+        .stat-card:nth-child(5)::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+        .stat-card:nth-child(6)::before { background: linear-gradient(90deg, #ef4444, #f59e0b); }
+
+        .stat-icon {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .stat-card:nth-child(2) .stat-icon { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .stat-card:nth-child(3) .stat-icon { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+        .stat-card:nth-child(4) .stat-icon { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+        .stat-card:nth-child(5) .stat-icon { background: rgba(6,182,212,0.15); color: var(--accent-cyan); }
+        .stat-card:nth-child(6) .stat-icon { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; margin: 4px 0; }
+        .stat-change { font-size: 0.7rem; display: flex; align-items: center; gap: 4px; }
+        .stat-change.up { color: var(--accent-green); }
+        .stat-change.down { color: var(--accent-red); }
+
+        /* ── Charts Grid ── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .chart-card.full-width { grid-column: 1 / -1; }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-title i { color: var(--accent-blue); font-size: 0.85rem; }
+
+        .chart-container { position: relative; width: 100%; }
+        .chart-container.large { height: 320px; }
+        .chart-container.medium { height: 280px; }
+
+        /* ── Tables ── */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(30,58,95,0.3);
+        }
+
+        tr:hover td { background: rgba(59,130,246,0.04); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+
+        .msg-preview {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .resolve-btn {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(16,185,129,0.3);
+            background: rgba(16,185,129,0.08);
+            color: var(--accent-green);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resolve-btn:hover { background: var(--accent-green); color: white; }
+
+        .last-updated {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,14,26,0.8);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-overlay.show { display: flex; }
+
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .admin-header { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+            .dashboard { padding: 16px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .header-left h1 { font-size: 1rem; }
+            .stat-value { font-size: 1.4rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .header-actions { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════ LOADING ══════ -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: var(--text-secondary); font-size: 0.85rem;">Loading dashboard...</span>
+</div>
+
+<!-- ══════ HEADER ══════ -->
+<header class="admin-header">
+    <div class="header-left">
+        <div>
+            <h1>📊 Admin Dashboard</h1>
+            <span class="subtitle">JECRC Foundation AI Helpdesk</span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <span class="last-updated">
+            <span class="live-dot"></span>
+            <span id="lastUpdated">Loading...</span>
+        </span>
+        <button class="btn btn-green" onclick="refreshAll()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <a href="/" class="btn">
+            <i class="fas fa-robot"></i> Chatbot
+        </a>
+        <a href="/admin/logout" class="btn btn-red">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</header>
+
+<!-- ══════ DASHBOARD ══════ -->
+<div class="dashboard">
+
+    <!-- ── Stat Cards ── -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-comments"></i></div>
+            <div class="stat-label">Total Chats</div>
+            <div class="stat-value" id="totalChats">-</div>
+            <div class="stat-change up" id="weeklyChange"><i class="fas fa-arrow-up"></i> --</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-label">Today's Chats</div>
+            <div class="stat-value" id="todayChats">-</div>
+            <div class="stat-change" id="todaySessions" style="color:var(--text-muted);">-- sessions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-label">Unique Sessions</div>
+            <div class="stat-value" id="uniqueSessions">-</div>
+            <div class="stat-change" style="color:var(--text-muted);" id="avgPerSession">~-- chats/session</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="stat-label">Avg Confidence</div>
+            <div class="stat-value" id="avgConfidence">-</div>
+            <div class="stat-change" id="resolveRate" style="color:var(--text-muted);">--% resolved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-brain"></i></div>
+            <div class="stat-label">Total Intents</div>
+            <div class="stat-value" id="totalIntents">-</div>
+            <div class="stat-change" style="color:var(--text-muted);" id="totalPatterns">-- patterns</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-label">Unresolved Queries</div>
+            <div class="stat-value" id="unresolvedCount">-</div>
+            <div class="stat-change" style="color:var(--accent-yellow);">Needs attention</div>
+        </div>
+    </div>
+
+    <!-- ── Export Section ── -->
+    <div class="table-card" style="margin-bottom:24px;">
+        <div class="chart-header">
+            <span class="chart-title"><i class="fas fa-download"></i> Export Chat Data</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;align-items:flex-end;">
+            <!-- Date Filters -->
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:0.7rem;color:var(--text-muted);">From Date</label>
+                <input type="date" id="exportFrom" style="background:var(--bg-primary);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;padding:8px 12px;font-family:Poppins;font-size:0.8rem;">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:0.7rem;color:var(--text-muted);">To Date</label>
+                <input type="date" id="exportTo" style="background:var(--bg-primary);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;padding:8px 12px;font-family:Poppins;font-size:0.8rem;">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:0.7rem;color:var(--text-muted);">Max Records</label>
+                <select id="exportLimit" style="background:var(--bg-primary);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;padding:8px 12px;font-family:Poppins;font-size:0.8rem;">
+                    <option value="100">100</option>
+                    <option value="500" selected>500</option>
+                    <option value="1000">1,000</option>
+                    <option value="5000">5,000</option>
+                    <option value="99999">All</option>
+                </select>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:0.7rem;color:var(--text-muted);">Filter Intent</label>
+                <input type="text" id="exportIntent" placeholder="e.g. admission_process" style="background:var(--bg-primary);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;padding:8px 12px;font-family:Poppins;font-size:0.8rem;width:180px;">
+            </div>
+
+            <!-- Export Buttons -->
+            <button class="btn btn-green" onclick="exportCSV()" style="height:38px;">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+            <button class="btn" onclick="exportPDF()" style="height:38px;color:#ef4444;border-color:rgba(239,68,68,0.3);">
+                <i class="fas fa-file-pdf"></i> Export PDF (Chats)
+            </button>
+            <button class="btn" onclick="exportAnalyticsPDF()" style="height:38px;color:#8b5cf6;border-color:rgba(139,92,246,0.3);">
+                <i class="fas fa-chart-pie"></i> Analytics Report PDF
+            </button>
+        </div>
+        <div id="exportStatus" style="margin-top:10px;font-size:0.75rem;color:var(--text-muted);display:none;">
+            <i class="fas fa-spinner fa-spin"></i> Generating file...
+        </div>
+    </div>
+
+    <!-- ── Charts Row 1 ── -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <span class="chart-title"><i class="fas fa-chart-line"></i> Daily Chat Volume</span>
+                <select id="dailyDays" onchange="loadDailyChart()" style="background:var(--bg-primary);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;padding:4px 10px;font-family:Poppins;font-size:0.75rem;">
+                    <option value="7">7 Days</option>
+                    <option value="14">14 Days</option>
+                    <option value="30" selected>30 Days</option>
+                </select>
+            </div>
+            <div class="chart-container large">
+                <canvas id="dailyChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <span class="chart-title"><i class="fas fa-clock"></i> Hourly Traffic</span>
+            </div>
+            <div class="chart-container large">
+                <canvas id="hourlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Charts Row 2 ── -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <span class="chart-title"><i class="fas fa-pie-chart"></i> Classification Methods</span>
+            </div>
+            <div class="chart-container medium">
+                <canvas id="methodChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <span class="chart-title"><i class="fas fa-fire"></i> Top 10 Intents</span>
+            </div>
+            <div class="chart-container medium">
+                <canvas id="intentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Confidence Trend ── -->
+    <div class="charts-grid">
+        <div class="chart-card full-width">
+            <div class="chart-header">
+                <span class="chart-title"><i class="fas fa-chart-area"></i> Confidence Score Trends</span>
+            </div>
+            <div class="chart-container large">
+                <canvas id="confidenceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Unresolved Queries Table ── -->
+    <div class="table-card">
+        <div class="chart-header">
+            <span class="chart-title"><i class="fas fa-question-circle"></i> Unresolved Queries</span>
+            <span class="badge badge-red" id="unresolvedBadge">0 pending</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Message</th>
+                    <th>Confidence</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="unresolvedTable">
+                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Recent Chats Table ── -->
+    <div class="table-card">
+        <div class="chart-header">
+            <span class="chart-title"><i class="fas fa-history"></i> Recent Conversations</span>
+            <button class="btn" onclick="loadRecentChats()" style="padding:5px 12px;font-size:0.72rem;">
+                <i class="fas fa-refresh"></i> Refresh
+            </button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User Message</th>
+                    <th>Intent</th>
+                    <th>Confidence</th>
+                    <th>Method</th>
+                </tr>
+            </thead>
+            <tbody id="recentChatsTable">
+                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+// ── Chart instances ──
+let dailyChart, hourlyChart, methodChart, intentChart, confidenceChart;
+
+// ── Chart.js Global Config ──
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(30,58,95,0.3)';
+Chart.defaults.font.family = 'Poppins';
+Chart.defaults.font.size = 11;
+
+// ══════════════════════════════════════
+// 📊 LOAD STAT CARDS
+// ══════════════════════════════════════
+async function loadStats() {
+    try {
+        const res = await fetch('/api/admin/live-stats');
+        const d = await res.json();
+
+        document.getElementById('totalChats').textContent = d.total_chats?.toLocaleString() || '0';
+        document.getElementById('todayChats').textContent = d.today_chats?.toLocaleString() || '0';
+        document.getElementById('uniqueSessions').textContent = d.unique_sessions?.toLocaleString() || '0';
+        document.getElementById('avgConfidence').textContent = ((d.avg_confidence || 0) * 100).toFixed(1) + '%';
+        document.getElementById('totalIntents').textContent = d.total_intents || '0';
+        document.getElementById('unresolvedCount').textContent = d.unresolved_count || '0';
+
+        // Weekly change
+        const wc = d.weekly_change || 0;
+        const wcEl = document.getElementById('weeklyChange');
+        wcEl.className = `stat-change ${wc >= 0 ? 'up' : 'down'}`;
+        wcEl.innerHTML = `<i class="fas fa-arrow-${wc >= 0 ? 'up' : 'down'}"></i> ${Math.abs(wc)}% vs last week`;
+
+        document.getElementById('todaySessions').textContent = `${d.today_sessions || 0} sessions today`;
+        document.getElementById('avgPerSession').textContent = `~${d.avg_chats_per_session || 0} chats/session`;
+        document.getElementById('resolveRate').textContent = `${d.resolve_rate || 0}% resolved`;
+        document.getElementById('totalPatterns').textContent = `${d.total_patterns || 0} patterns`;
+
+        document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+    } catch (e) {
+        console.error('Stats error:', e);
+    }
+}
+
+// ══════════════════════════════════════
+// 📈 DAILY CHAT CHART
+// ══════════════════════════════════════
+async function loadDailyChart() {
+    try {
+        const days = document.getElementById('dailyDays').value;
+        const res = await fetch(`/api/admin/chart-data?type=daily&days=${days}`);
+        const data = await res.json();
+
+        const labels = (data.daily_chats || []).map(d => {
+            const date = new Date(d.date);
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        });
+        const values = (data.daily_chats || []).map(d => d.count);
+
+        if (dailyChart) dailyChart.destroy();
+
+        dailyChart = new Chart(document.getElementById('dailyChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Chats',
+                    data: values,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#0a0e1a',
+                    pointBorderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(30,58,95,0.2)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    } catch (e) { console.error('Daily chart error:', e); }
+}
+
+// ══════════════════════════════════════
+// 🕐 HOURLY CHART
+// ══════════════════════════════════════
+async function loadHourlyChart() {
+    try {
+        const res = await fetch('/api/admin/chart-data?type=hourly');
+        const data = await res.json();
+
+        const labels = (data.hourly_distribution || []).map(d => `${d.hour}:00`);
+        const values = (data.hourly_distribution || []).map(d => d.count);
+
+        if (hourlyChart) hourlyChart.destroy();
+
+        hourlyChart = new Chart(document.getElementById('hourlyChart'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Chats',
+                    data: values,
+                    backgroundColor: values.map((v, i) => {
+                        const max = Math.max(...values);
+                        return v === max ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.3)';
+                    }),
+                    borderColor: 'rgba(59,130,246,0.6)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(30,58,95,0.2)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    } catch (e) { console.error('Hourly chart error:', e); }
+}
+
+// ══════════════════════════════════════
+// 🥧 METHOD PIE CHART
+// ══════════════════════════════════════
+async function loadMethodChart() {
+    try {
+        const res = await fetch('/api/admin/chart-data?type=methods');
+        const data = await res.json();
+
+        const methods = data.method_distribution || [];
+        const labels = methods.map(m => m.method || 'unknown');
+        const values = methods.map(m => m.count);
+        const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899', '#6366f1'];
+
+        if (methodChart) methodChart.destroy();
+
+        methodChart = new Chart(document.getElementById('methodChart'), {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderColor: '#0a0e1a',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { padding: 12, usePointStyle: true, pointStyle: 'circle' }
+                    }
+                }
+            }
+        });
+    } catch (e) { console.error('Method chart error:', e); }
+}
+
+// ══════════════════════════════════════
+// 🔥 TOP INTENTS CHART
+// ══════════════════════════════════════
+async function loadIntentChart() {
+    try {
+        const res = await fetch('/api/admin/chart-data?type=intents');
+        const data = await res.json();
+
+        const intents = data.top_intents || [];
+        const labels = intents.map(i => i.intent.replace(/_/g, ' '));
+        const values = intents.map(i => i.count);
+
+        if (intentChart) intentChart.destroy();
+
+        intentChart = new Chart(document.getElementById('intentChart'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Count',
+                    data: values,
+                    backgroundColor: 'rgba(139,92,246,0.4)',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: 'rgba(30,58,95,0.2)' } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    } catch (e) { console.error('Intent chart error:', e); }
+}
+
+// ══════════════════════════════════════
+// 📈 CONFIDENCE TREND CHART
+// ══════════════════════════════════════
+async function loadConfidenceChart() {
+    try {
+        const res = await fetch('/api/admin/chart-data?type=confidence&days=14');
+        const data = await res.json();
+
+        const trends = data.confidence_trends || [];
+        const labels = trends.map(d => {
+            const date = new Date(d.date);
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        });
+
+        if (confidenceChart) confidenceChart.destroy();
+
+        confidenceChart = new Chart(document.getElementById('confidenceChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Avg Confidence',
+                        data: trends.map(d => (d.avg_confidence * 100).toFixed(1)),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                    },
+                    {
+                        label: 'Max',
+                        data: trends.map(d => (d.max_confidence * 100).toFixed(1)),
+                        borderColor: '#3b82f6',
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        pointRadius: 2,
+                        fill: false,
+                    },
+                    {
+                        label: 'Min',
+                        data: trends.map(d => (d.min_confidence * 100).toFixed(1)),
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        pointRadius: 2,
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(30,58,95,0.2)' },
+                        ticks: { callback: v => v + '%' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    } catch (e) { console.error('Confidence chart error:', e); }
+}
+
+// ══════════════════════════════════════
+// ❓ UNRESOLVED QUERIES TABLE
+// ══════════════════════════════════════
+async function loadUnresolved() {
+    try {
+        const res = await fetch('/api/admin/unresolved');
+        const data = await res.json();
+        const queries = data.queries || [];
+
+        document.getElementById('unresolvedBadge').textContent = `${queries.length} pending`;
+
+        const tbody = document.getElementById('unresolvedTable');
+        if (queries.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--accent-green);">✅ All queries resolved!</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = queries.map(q => `
+            <tr>
+                <td>#${q.id}</td>
+                <td class="msg-preview" title="${(q.user_message || '').replace(/"/g, '&quot;')}">${q.user_message || '-'}</td>
+                <td><span class="badge ${q.confidence < 0.2 ? 'badge-red' : 'badge-yellow'}">${(q.confidence * 100).toFixed(1)}%</span></td>
+                <td>${q.timestamp ? new Date(q.timestamp).toLocaleString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '-'}</td>
+                <td><button class="resolve-btn" onclick="resolveQuery(${q.id})"><i class="fas fa-check"></i> Resolve</button></td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error('Unresolved error:', e); }
+}
+
+async function resolveQuery(id) {
+    const response = prompt('Admin response (optional):');
+    if (response === null) return;
+
+    try {
+        await fetch('/api/admin/resolve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query_id: id, response: response })
+        });
+        loadUnresolved();
+        loadStats();
+    } catch (e) { console.error('Resolve error:', e); }
+}
+
+// ══════════════════════════════════════
+// 💬 RECENT CHATS TABLE
+// ══════════════════════════════════════
+async function loadRecentChats() {
+    try {
+        const res = await fetch('/api/admin/recent-chats?limit=20');
+        const data = await res.json();
+        const chats = data.chats || [];
+
+        const tbody = document.getElementById('recentChatsTable');
+        if (chats.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No chats yet</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = chats.map(c => {
+            const conf = c.confidence || 0;
+            const badgeClass = conf >= 0.7 ? 'badge-green' : conf >= 0.4 ? 'badge-yellow' : 'badge-red';
+            const methodBadge = c.method === 'hybrid' ? 'badge-purple' :
+                               c.method === 'tfidf' ? 'badge-blue' :
+                               c.method === 'keyword' ? 'badge-yellow' : 'badge-red';
+
+            return `<tr>
+                <td>${c.timestamp ? new Date(c.timestamp).toLocaleString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '-'}</td>
+                <td class="msg-preview" title="${(c.user_message || '').replace(/"/g, '&quot;')}">${c.user_message || '-'}</td>
+                <td><span class="badge badge-blue">${(c.intent || 'unknown').replace(/_/g, ' ')}</span></td>
+                <td><span class="badge ${badgeClass}">${(conf * 100).toFixed(1)}%</span></td>
+                <td><span class="badge ${methodBadge}">${c.method || '-'}</span></td>
+            </tr>`;
+        }).join('');
+    } catch (e) { console.error('Recent chats error:', e); }
+}
+
+// ══════════════════════════════════════
+// 📥 EXPORT FUNCTIONS
+// ══════════════════════════════════════
+
+function getExportParams() {
+    const from = document.getElementById('exportFrom').value;
+    const to = document.getElementById('exportTo').value;
+    const limit = document.getElementById('exportLimit').value;
+    const intent = document.getElementById('exportIntent').value.trim();
+
+    let params = `limit=${limit}`;
+    if (from) params += `&from=${from}`;
+    if (to) params += `&to=${to}`;
+    if (intent) params += `&intent=${intent}`;
+    return params;
+}
+
+function showExportStatus(show) {
+    const el = document.getElementById('exportStatus');
+    el.style.display = show ? 'block' : 'none';
+}
+
+function exportCSV() {
+    showExportStatus(true);
+    const params = getExportParams();
+    const url = `/api/admin/export/csv?${params}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Export failed');
+            return response.blob();
+        })
+        .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `jecrc_chats_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            showExportStatus(false);
+        })
+        .catch(err => {
+            console.error('CSV export error:', err);
+            alert('❌ CSV export failed! Check console.');
+            showExportStatus(false);
+        });
+}
+
+function exportPDF() {
+    showExportStatus(true);
+    const params = getExportParams();
+    const url = `/api/admin/export/pdf?${params}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Export failed');
+            return response.blob();
+        })
+        .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `jecrc_chat_report_${new Date().toISOString().slice(0,10)}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            showExportStatus(false);
+        })
+        .catch(err => {
+            console.error('PDF export error:', err);
+            alert('❌ PDF export failed! Check console.');
+            showExportStatus(false);
+        });
+}
+
+function exportAnalyticsPDF() {
+    showExportStatus(true);
+    const url = '/api/admin/export/analytics-pdf';
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Export failed');
+            return response.blob();
+        })
+        .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `jecrc_analytics_${new Date().toISOString().slice(0,10)}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            showExportStatus(false);
+        })
+        .catch(err => {
+            console.error('Analytics PDF error:', err);
+            alert('❌ Analytics PDF export failed!');
+            showExportStatus(false);
+        });
+}
+
+// ══════════════════════════════════════
+// 🔄 REFRESH ALL
+// ══════════════════════════════════════
+async function refreshAll() {
+    document.getElementById('loadingOverlay').classList.add('show');
+    try {
+        await Promise.all([
+            loadStats(),
+            loadDailyChart(),
+            loadHourlyChart(),
+            loadMethodChart(),
+            loadIntentChart(),
+            loadConfidenceChart(),
+            loadUnresolved(),
+            loadRecentChats()
+        ]);
+    } catch (e) {
+        console.error('Refresh error:', e);
+    }
+    document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════
+// 🚀 INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    refreshAll();
+
+    // Auto-refresh every 30 seconds
+    setInterval(() => {
+        loadStats();
+        loadUnresolved();
+        loadRecentChats();
+    }, 30000);
+
+    // Charts refresh every 2 minutes
+    setInterval(() => {
+        loadDailyChart();
+        loadHourlyChart();
+        loadMethodChart();
+        loadIntentChart();
+        loadConfidenceChart();
+    }, 120000);
+});
+</script>
+
+</body>
+</html>

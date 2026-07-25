@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: jecrc-chatbot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: ASSEMBLYAI_API_KEY
+        sync: false
+      - key: FLASK_SECRET_KEY
+        sync: false

@@ -1,0 +1,25 @@
+# Virtual Environment
+venv/
+
+# Secrets
+api.env
+.env
+
+# Database
+chat_history.db
+
+# Cache
+__pycache__/
+*.pyc
+
+# Temp files
+temp_*.wav
+temp_*.webm
+temp_*.mp3
+
+# Generated audio
+static/audio_*.mp3
+
+# OS files
+.DS_Store
+Thumbs.db
