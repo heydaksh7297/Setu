@@ -4,6 +4,8 @@ gunicorn==21.2.0
 scikit-learn==1.5.2
 numpy==1.26.4
 nltk==3.9.1
+rapidfuzz==3.13.0
+beautifulsoup4==4.12.3
 gTTS==2.5.3
 requests==2.32.3
 python-dotenv==1.0.1
